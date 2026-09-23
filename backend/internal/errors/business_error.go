@@ -14,8 +14,10 @@ func New(code int, message string, status int) *BusinessError {
 }
 
 var (
-	ErrNotFound     = New(40401, "资源不存在", http.StatusNotFound)
-	ErrValidation   = New(40001, "请求参数不合法", http.StatusBadRequest)
-	ErrUnauthorized = New(40101, "认证失败", http.StatusUnauthorized)
-	ErrInternal     = New(50001, "服务器内部错误", http.StatusInternalServerError)
+	ErrNotFound            = New(40401, "资源不存在", http.StatusNotFound)
+	ErrValidation          = New(40001, "请求参数不合法", http.StatusBadRequest)
+	ErrUnauthorized        = New(40101, "认证失败", http.StatusUnauthorized)
+	ErrInternal            = New(50001, "服务器内部错误", http.StatusInternalServerError)
+	ErrAlertNoteRequired   = New(40002, "处理说明不能为空", http.StatusBadRequest)
+	ErrAlertAlreadyHandled = New(40901, "报警已处理，请勿重复操作", http.StatusConflict)
 )

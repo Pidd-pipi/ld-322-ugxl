@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"github.com/cygreenenv/greenhouse-panel/internal/constants"
 	apperrors "github.com/cygreenenv/greenhouse-panel/internal/errors"
 	"github.com/cygreenenv/greenhouse-panel/internal/model"
 	"gorm.io/gorm"
@@ -29,7 +30,7 @@ func (r *AlertRepository) List(greenhouseID uint) ([]model.Alert, error) {
 	}
 	return rows, nil
 }
-func (r *AlertRepository) Handle(id uint) (*model.Alert, error) {
+func (r *AlertRepository) Handle(id uint, note, handledBy string) (*model.Alert, error) {
 	var row model.Alert
 	err := r.db.First(&row, id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -38,18 +39,31 @@ func (r *AlertRepository) Handle(id uint) (*model.Alert, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get alert: %w", err)
 	}
+	if row.Status == constants.AlertHandled {
+		return nil, apperrors.ErrAlertAlreadyHandled
+	}
 	now := time.Now()
-	row.Status = "handled"
+	row.Status = constants.AlertHandled
 	row.HandledAt = &now
+	row.HandledBy = handledBy
+	row.HandleNote = note
 	if err = r.db.Save(&row).Error; err != nil {
 		return nil, fmt.Errorf("handle alert: %w", err)
 	}
 	return &row, nil
 }
-func (r *AlertRepository) CountBetween(greenhouseID uint, start, end time.Time) (int64, error) {
-	var count int64
-	if err := r.db.Model(&model.Alert{}).Where("greenhouse_id=? AND created_at BETWEEN ? AND ?", greenhouseID, start, end).Count(&count).Error; err != nil {
-		return 0, fmt.Errorf("count alerts: %w", err)
+func (r *AlertRepository) CountByStatusBetween(greenhouseID uint, start, end time.Time) (map[string]int64, error) {
+	type statusCount struct {
+		Status string
+		Total  int64
 	}
-	return count, nil
+	var rows []statusCount
+	if err := r.db.Model(&model.Alert{}).Select("status, count(*) as total").Where("greenhouse_id = ? AND created_at BETWEEN ? AND ?", greenhouseID, start, end).Group("status").Scan(&rows).Error; err != nil {
+		return nil, fmt.Errorf("count alerts by status: %w", err)
+	}
+	totals := map[string]int64{constants.AlertPending: 0, constants.AlertHandled: 0}
+	for _, row := range rows {
+		totals[row.Status] = row.Total
+	}
+	return totals, nil
 }

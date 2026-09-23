@@ -14,6 +14,7 @@ const (
 	AlertHandled    = "handled"
 	RoleAdmin       = "admin"
 	SuccessMessage  = "ok"
+	ContextUsername = "auth_username"
 	EventAlert      = "alert.created"
 	EventDevice     = "device.updated"
 )

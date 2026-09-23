@@ -20,6 +20,9 @@ type ReadingRequest struct {
 	SensorID uint    `json:"sensorId" validate:"required"`
 	Value    float64 `json:"value" validate:"required"`
 }
+type AlertHandleRequest struct {
+	Note string `json:"note" validate:"max=500"`
+}
 type ThresholdRequest struct {
 	MinValue float64 `json:"minValue"`
 	MaxValue float64 `json:"maxValue" validate:"gt=0"`

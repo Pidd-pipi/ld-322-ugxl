@@ -12,5 +12,7 @@ type Alert struct {
 	Status       string     `gorm:"type:varchar(32);index" json:"status"`
 	CreatedAt    time.Time  `json:"createdAt"`
 	HandledAt    *time.Time `json:"handledAt,omitempty"`
+	HandledBy    string     `gorm:"type:varchar(64)" json:"handledBy,omitempty"`
+	HandleNote   string     `gorm:"type:varchar(500)" json:"handleNote,omitempty"`
 	Sensor       Sensor     `json:"sensor,omitempty"`
 }
