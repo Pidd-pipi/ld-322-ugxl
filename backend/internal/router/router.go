@@ -31,7 +31,7 @@ func New(d Dependencies) *gin.Engine {
 	greenhouse := handler.NewGreenhouseHandler(d.Monitoring, v)
 	sensors := handler.NewSensorHandler(d.Monitoring, v)
 	monitoring := handler.NewMonitoringHandler(d.Monitoring, v)
-	alerts := handler.NewAlertHandler(d.Alerts)
+	alerts := handler.NewAlertHandler(d.Alerts, v)
 	devices := handler.NewDeviceHandler(d.Control, v)
 	reports := handler.NewReportHandler(d.Reports)
 	r.GET(constants.HealthPath, func(c *gin.Context) { handler.Success(c, gin.H{"status": "healthy"}) })

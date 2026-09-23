@@ -17,5 +17,6 @@ var (
 	ErrNotFound     = New(40401, "资源不存在", http.StatusNotFound)
 	ErrValidation   = New(40001, "请求参数不合法", http.StatusBadRequest)
 	ErrUnauthorized = New(40101, "认证失败", http.StatusUnauthorized)
+	ErrAlertHandled = New(40901, "该报警已处理，处理记录不可修改", http.StatusConflict)
 	ErrInternal     = New(50001, "服务器内部错误", http.StatusInternalServerError)
 )

@@ -37,9 +37,9 @@ docker compose down
 - **多温室总览**：预置两个温室，卡片展示温度、湿度、光照、CO₂、土壤湿度的最新数值；30 秒自动刷新。
 - **传感器采集与模拟**：通过 API 写入传感器读数；总览页可一键生成一轮演示采样。
 - **趋势与历史**：按温室和日/周/月范围查看 ECharts 折线趋势，支持图表缩放、平移及 CSV 导出。
-- **阈值报警**：每个传感器具备上下限；超限时持久化报警并通过 WebSocket 推送，支持标记为已处理。
+- **阈值报警**：每个传感器具备上下限；超限时持久化报警并通过 WebSocket 推送。处理报警必须填写处理说明，处理人按当前登录账号自动记录，空说明会被拒绝且报警保持待处理；报警列表展示处理说明、处理人与处理时间，已处理记录不可修改。
 - **远程控制**：可开关循环风机、遮阳帘、灌溉泵、补光灯；每次操作保留设备操作记录，支持创建定时任务 API。
-- **环境报告**：自动计算平均值、最高/最低值与报警统计，支持日/周/月报告以及 PDF 导出。
+- **环境报告**：自动计算平均值、最高/最低值，并按温室与日/周/月范围统计待处理/已处理报警数量，支持 PDF 导出。
 
 ## 技术栈
 
@@ -86,10 +86,10 @@ npm run dev
 | GET | `/api/v1/readings/history?greenhouse_id=1` | 历史读数；可带 `start`、`end`、`types` |
 | POST | `/api/v1/greenhouses/:id/simulate` | 生成模拟读数 |
 | PUT | `/api/v1/sensors/:id/threshold` | 更新传感器上下限 |
-| GET / PATCH | `/api/v1/alerts`、`/api/v1/alerts/:id/handle` | 报警查询 / 处理 |
+| GET / PATCH | `/api/v1/alerts`、`/api/v1/alerts/:id/handle` | 报警查询 / 处理（请求体 `{"note":"处理说明"}`，处理人取当前账号，空说明返回 400，重复处理返回 409） |
 | GET / PATCH | `/api/v1/devices`、`/api/v1/devices/:id/toggle` | 设备查询 / 开关 |
 | POST | `/api/v1/schedules` | 创建设备定时任务 |
-| GET | `/api/v1/reports/environment?greenhouse_id=1&range=day` | 环境分析报告 |
+| GET | `/api/v1/reports/environment?greenhouse_id=1&range=day` | 环境分析报告（含待处理/已处理报警数；range 取 day/week/month） |
 | GET | `/ws` | WebSocket 读数/报警/设备状态推送 |
 
 完整的接口轮廓位于 [`backend/api/openapi.yaml`](backend/api/openapi.yaml)。

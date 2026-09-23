@@ -24,6 +24,9 @@ type ThresholdRequest struct {
 	MinValue float64 `json:"minValue"`
 	MaxValue float64 `json:"maxValue" validate:"gt=0"`
 }
+type AlertHandleRequest struct {
+	Note string `json:"note" validate:"required,min=2,max=500"`
+}
 type DeviceToggleRequest struct {
 	Status string `json:"status" validate:"required,oneof=on off"`
 }

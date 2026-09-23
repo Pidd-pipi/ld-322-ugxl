@@ -15,5 +15,6 @@ const (
 	RoleAdmin       = "admin"
 	SuccessMessage  = "ok"
 	EventAlert      = "alert.created"
+	EventAlertDone  = "alert.handled"
 	EventDevice     = "device.updated"
 )

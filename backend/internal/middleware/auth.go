@@ -16,11 +16,19 @@ func Auth(auth *service.AuthService) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if _, err := auth.Parse(parts[1]); err != nil {
+		claims, err := auth.Parse(parts[1])
+		if err != nil {
 			handler.Fail(c, err)
 			c.Abort()
 			return
 		}
+		username, _ := claims["sub"].(string)
+		if username == "" {
+			handler.Fail(c, apperrors.ErrUnauthorized)
+			c.Abort()
+			return
+		}
+		c.Set(handler.CurrentUserKey, username)
 		c.Next()
 	}
 }

@@ -8,6 +8,10 @@ import (
 	"net/http"
 )
 
+// CurrentUserKey 是当前登录账号（JWT sub）在 gin.Context 中的键，
+// 由鉴权中间件写入，处理报警等写操作据此记录操作人。
+const CurrentUserKey = "currentUser"
+
 func Success(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, gin.H{"code": 0, "message": constants.SuccessMessage, "data": data})
 }

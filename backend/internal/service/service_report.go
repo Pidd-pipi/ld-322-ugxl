@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/cygreenenv/greenhouse-panel/internal/model"
 	"github.com/cygreenenv/greenhouse-panel/internal/repository"
 	"time"
 )
@@ -12,11 +11,13 @@ type ReportService struct {
 	alertRepo  *repository.AlertRepository
 }
 type Report struct {
-	GreenhouseID uint              `json:"greenhouseId"`
-	Range        string            `json:"range"`
-	GeneratedAt  time.Time         `json:"generatedAt"`
-	Alerts       int64             `json:"alerts"`
-	Metrics      map[string]Metric `json:"metrics"`
+	GreenhouseID  uint              `json:"greenhouseId"`
+	Range         string            `json:"range"`
+	GeneratedAt   time.Time         `json:"generatedAt"`
+	Alerts        int64             `json:"alerts"`
+	PendingAlerts int64             `json:"pendingAlerts"`
+	HandledAlerts int64             `json:"handledAlerts"`
+	Metrics       map[string]Metric `json:"metrics"`
 }
 type Metric struct {
 	Average float64 `json:"average"`
@@ -52,11 +53,12 @@ func (s *ReportService) Generate(id uint, rangeName string, start, end time.Time
 		m.Average = sums[r.Sensor.Type] / float64(counts[r.Sensor.Type])
 		report.Metrics[r.Sensor.Type] = m
 	}
-	report.Alerts, err = s.alertRepo.CountBetween(id, start, end)
+	statusCounts, err := s.alertRepo.CountByStatusBetween(id, start, end)
 	if err != nil {
 		return nil, err
 	}
+	report.PendingAlerts = statusCounts["pending"]
+	report.HandledAlerts = statusCounts["handled"]
+	report.Alerts = report.PendingAlerts + report.HandledAlerts
 	return report, nil
 }
-
-var _ = model.Alert{}

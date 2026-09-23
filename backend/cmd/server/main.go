@@ -47,7 +47,7 @@ func main() {
 	auth := service.NewAuthService(cfg.JWTSecret)
 	monitoring := service.NewMonitoringService(greenhouses, sensors, alerts, l, hub)
 	control := service.NewControlService(devices, l, hub)
-	alertService := service.NewAlertService(alerts, l)
+	alertService := service.NewAlertService(alerts, l, hub)
 	reports := service.NewReportService(sensors, alerts)
 	engine := router.New(router.Dependencies{Config: cfg, Logger: l, Auth: auth, Monitoring: monitoring, Alerts: alertService, Control: control, Reports: reports, Hub: hub})
 	l.Info("server started", "port", cfg.ServerPort)
